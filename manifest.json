@@ -1,0 +1,95 @@
+{
+  "id": "zoom-notifications",
+  "name": "Zoom Notifications",
+  "version": "1.0.0",
+  "description": "Send notifications via Zoom chat channels and direct messages using Server-to-Server OAuth",
+  "author": "Kiket",
+  "license": "MIT",
+  "repository": "https://github.com/kiket-dev/kiket-ext-zoom",
+  "capabilities": {
+    "notification_delivery": true,
+    "supports_channels": true,
+    "supports_dm": true,
+    "supports_group_chat": true,
+    "supports_rich_formatting": true,
+    "supports_attachments": false,
+    "supports_threading": false
+  },
+  "endpoints": [
+    {
+      "id": "send_notification",
+      "path": "/notify",
+      "method": "POST",
+      "description": "Send a notification to Zoom chat"
+    },
+    {
+      "id": "validate_channel",
+      "path": "/validate",
+      "method": "POST",
+      "description": "Validate Zoom channel/user configuration"
+    },
+    {
+      "id": "health_check",
+      "path": "/health",
+      "method": "GET",
+      "description": "Health check endpoint"
+    }
+  ],
+  "configuration": {
+    "secrets": [
+      {
+        "key": "ZOOM_ACCOUNT_ID",
+        "description": "Zoom Server-to-Server OAuth Account ID",
+        "required": true
+      },
+      {
+        "key": "ZOOM_CLIENT_ID",
+        "description": "Zoom Server-to-Server OAuth Client ID",
+        "required": true
+      },
+      {
+        "key": "ZOOM_CLIENT_SECRET",
+        "description": "Zoom Server-to-Server OAuth Client Secret",
+        "required": true
+      }
+    ],
+    "settings": [
+      {
+        "key": "default_message_format",
+        "description": "Default message format (markdown or plain)",
+        "default": "markdown",
+        "type": "string"
+      },
+      {
+        "key": "retry_attempts",
+        "description": "Number of retry attempts for failed deliveries",
+        "default": "3",
+        "type": "integer"
+      },
+      {
+        "key": "timeout_seconds",
+        "description": "Request timeout in seconds",
+        "default": "30",
+        "type": "integer"
+      }
+    ]
+  },
+  "billing": {
+    "model": "usage",
+    "metrics": [
+      {
+        "id": "notifications_sent",
+        "name": "Notifications Sent",
+        "unit": "notification",
+        "description": "Number of notifications successfully delivered"
+      }
+    ]
+  },
+  "tags": [
+    "notification",
+    "chat",
+    "zoom",
+    "communication",
+    "team-collaboration"
+  ]
+}
