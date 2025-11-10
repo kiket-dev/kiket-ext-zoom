@@ -1,0 +1,5 @@
+version: 2
+
+models:
+  - name: zoom_metrics_daily
+    description: "Daily Zoom delivery metrics by channel"
