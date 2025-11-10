@@ -1,0 +1,121 @@
+model_version: "1.0"
+extension:
+  id: zoom-notifications
+  name: Zoom Notifications
+  version: 1.0.0
+  description: Send notifications via Zoom chat channels and direct messages using Server-to-Server OAuth
+  author: Kiket Team
+  homepage: https://github.com/kiket-dev/kiket-ext-zoom
+  delivery: http
+  callback:
+    url: ${EXTENSION_BASE_URL}
+    secret: env:KIKET_WEBHOOK_SECRET
+    timeout: 30000
+    required: true
+  activationEvents:
+    - issue.created
+    - issue.transitioned
+    - issue.assigned
+    - issue.commented
+    - workflow.sla_breach
+  permissions:
+    - issues:read
+    - users:read
+    - notifications:write
+  capabilities:
+    - notifications
+    - chat
+    - direct-messages
+    - channels
+    - group-chat
+    - rich-formatting
+  hooks:
+    - event: issue.created
+      timeout: 5000
+      retries: 1
+      description: Send notification when issue is created
+    - event: issue.transitioned
+      timeout: 5000
+      retries: 1
+      description: Send notification on issue state transitions
+    - event: issue.assigned
+      timeout: 5000
+      retries: 1
+      description: Notify users when assigned to issues
+    - event: issue.commented
+      timeout: 5000
+      retries: 1
+      description: Send notification for new comments
+    - event: workflow.sla_breach
+      timeout: 5000
+      retries: 2
+      description: Alert teams of SLA violations
+  contributes:
+    commands:
+      - command: zoom.sendMessage
+        title: Send Zoom Message
+        description: Send a message to a Zoom chat or channel
+        category: Notifications
+        icon: bi-camera-video
+        keywords: ["zoom", "chat", "message", "notify"]
+        handler:
+          type: extension_event
+          event: zoom.sendMessage
+      - command: zoom.validateChannel
+        title: Validate Zoom Channel
+        description: Test Zoom channel or user configuration
+        category: Settings
+        icon: bi-check-circle
+        keywords: ["zoom", "validate", "test", "channel"]
+        handler:
+          type: extension_event
+          event: zoom.validateChannel
+  configuration:
+    ZOOM_ACCOUNT_ID:
+      type: string
+      secret: true
+      description: Zoom Server-to-Server OAuth Account ID
+    ZOOM_CLIENT_ID:
+      type: string
+      secret: true
+      description: Zoom Server-to-Server OAuth Client ID
+    ZOOM_CLIENT_SECRET:
+      type: string
+      secret: true
+      description: Zoom Server-to-Server OAuth Client Secret
+    default_message_format:
+      type: string
+      default: "markdown"
+      description: Default message format (markdown or plain)
+    retry_attempts:
+      type: integer
+      default: "3"
+      description: Number of retry attempts for failed deliveries
+    timeout_seconds:
+      type: integer
+      default: "30"
+      description: Request timeout in seconds
+  assets:
+    icon: ./public/icon.svg
+
+deployment:
+  runtime: cloud_run
+  region: ${KIKET_REGION:-europe-west1}
+  image: ${ZOOM_IMAGE:-europe-west1-docker.pkg.dev/kiket-471917/kiket-extensions/kiket-ext-zoom:latest}
+  resources:
+    cpu: "1"
+    memory: "512Mi"
+    concurrency: 10
+  min_instances: 0
+  max_instances: 10
+  vpc:
+    connector: ${KIKET_VPC_CONNECTOR}
+    egress: all-traffic
+  secret_keys:
+    - KIKET_WEBHOOK_SECRET
+    - ZOOM_ACCOUNT_ID
+    - ZOOM_CLIENT_ID
+    - ZOOM_CLIENT_SECRET
+  env:
+    RACK_ENV: production
+    PORT: "9292"
