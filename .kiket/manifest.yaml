@@ -1,6 +1,6 @@
 model_version: "1.0"
 extension:
-  id: zoom-notifications
+  id: dev.kiket.ext.zoom
   name: Zoom Notifications
   version: 1.0.0
   description: Send notifications via Zoom chat channels and direct messages using Server-to-Server OAuth
